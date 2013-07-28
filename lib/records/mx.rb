@@ -11,6 +11,7 @@ module DNS
     def value
 
       target_host = @value.to_s
+      target_host = target_host + '.' unless target_host.end_with? '.'
       if @value.is_a?(DNS::Record)
         target_host = @value.full_host.to_s
       end

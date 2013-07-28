@@ -13,8 +13,8 @@ module DNS
         MX host.to_s, 'ASPMX.L.GOOGLE.COM.', :priority => 1, :comment => comment
         MX host, 'ALT1.ASPMX.L.GOOGLE.COM.', :priority => 5, :comment => comment
         MX host, 'ALT2.ASPMX.L.GOOGLE.COM.', :priority => 5, :comment => comment
-        MX host, 'ASPMX2.GOOGLEMAIL.COM', :priority => 10, :comment => comment
-        MX host, 'ASPMX23.GOOGLEMAIL.COM', :priority => 10, :comment => comment
+        MX host, 'ASPMX2.GOOGLEMAIL.COM.', :priority => 10, :comment => comment
+        MX host, 'ASPMX23.GOOGLEMAIL.COM.', :priority => 10, :comment => comment
         CNAME ['mail', host].join('.'), 'ghs.googlehosted.com.', :comment => comment
         CNAME ['www', host].join('.'), 'ghs.googlehosted.com.', :comment => comment
         TXT host, 'v=spf1 include:_spf.google.com ~all', :comment => comment
