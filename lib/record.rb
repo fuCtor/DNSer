@@ -6,7 +6,7 @@ module DNS
     def initialize domain, host, params = {}
 
       ttl domain.ttl_val
-      priority 0
+      priority 0 unless @priority_val
 
       unless host.is_a? Symbol
         @host = host.dup
@@ -22,7 +22,7 @@ module DNS
     end
 
     def priority(value)
-      @priority = value
+      @priority_val = value
     end
 
     alias_method :prio, :priority
@@ -86,6 +86,8 @@ module DNS
           target_host = target_host.to_s
           target_host = target_host + '.' unless target_host.end_with? '.'
       end
+
+      target_host
 
     end
 
