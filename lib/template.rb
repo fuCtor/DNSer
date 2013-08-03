@@ -5,10 +5,12 @@ module DNS
       @params = params
     end
 
-    def apply(domain, params = {}, &block)
-      params = @params.merge(params)
-      domain.instance_exec params, &@block if @block
-      domain.instance_exec params, &block if block
+    def apply(domain, *args, &block)
+      if args.last.is_a? Hash
+        args.push @params.merge(args.pop)
+      end
+      domain.instance_exec *args, &@block if @block
+      domain.instance_exec *args, &block if block
     end
   end
 end
