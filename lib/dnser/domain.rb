@@ -4,15 +4,15 @@ require 'ipaddr'
 require ::File.expand_path('../record.rb', __FILE__)
 require ::File.expand_path('../builder.rb', __FILE__)
 
-module DNS
+module DNSer
   class Domain
     attr :name
 
     def initialize domain_name, params = {}, &block
       @name = domain_name
 
-      @builder = params[:builder] || DNS::StreamBuilder.new($stdout)
-      @builder = DNS::StreamBuilder.new(@builder) unless @builder.is_a? DNS::Builder
+      @builder = params[:builder] || DNSer::StreamBuilder.new($stdout)
+      @builder = DNSer::StreamBuilder.new(@builder) unless @builder.is_a? DNSer::Builder
 
       @name = @name + '.' unless @name.end_with?('.')
       @ttl_val = 3600
@@ -40,7 +40,7 @@ module DNS
 
       @records_tmp = @records.dup
 
-      soa_index = @records_tmp.index {|x| x.is_a?(DNS::SoaRecord) }
+      soa_index = @records_tmp.index {|x| x.is_a?(DNSer::SoaRecord) }
       @builder.write @records_tmp.delete_at( soa_index ) if soa_index
 
       ns = []
@@ -61,9 +61,9 @@ module DNS
 
     def method_missing name, *args, &block
       name = name.to_s.downcase
-      class_name = '::DNS::' + name.capitalize + 'Record'
+      class_name = '::DNSer::' + name.capitalize + 'Record'
 
-      return DNS.apply_template name.gsub('apply_', '') do |tpl|
+      return DNSer.apply_template name.gsub('apply_', '') do |tpl|
         tpl.apply self, *args, &block
       end if name.start_with? 'apply_'
 
@@ -73,7 +73,7 @@ module DNS
         eval "#{class_name}"
       rescue => e
         args = [name] + args
-        DNS::BaseRecord
+        DNSer::BaseRecord
       end
 
       record =  record_class.new(self, *args, &block)
@@ -81,7 +81,7 @@ module DNS
 
       if params.key? :alias
         [params[:alias]].flatten.each do |host|
-          @records << DNS::BaseRecord.new(self, :CNAME, host, record, &block)
+          @records << DNSer::BaseRecord.new(self, :CNAME, host, record, &block)
         end
       end if params
 

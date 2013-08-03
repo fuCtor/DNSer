@@ -26,8 +26,8 @@ zone 'domain.ltd' do
   end
 
   A IPAddr.new('127.0.0.1'), alias: :www
-
   A :dev, IPAddr.new('127.0.0.2')
 
   apply_google_app host, '6tTalLzrBXBO4Gy9700TAbpg2QTKzGYEuZ_Ls69jle8'
+
 end

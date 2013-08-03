@@ -1,4 +1,4 @@
-module DNS
+module DNSer
   class Builder
     def write *args
       raise NotImplementedError

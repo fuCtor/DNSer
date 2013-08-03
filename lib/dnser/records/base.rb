@@ -1,5 +1,5 @@
-module DNS
-  class BaseRecord < DNS::Record
+module DNSer
+  class BaseRecord < DNSer::Record
     attr :ttl_val
     attr :value
     attr_reader :name

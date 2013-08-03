@@ -1,7 +1,7 @@
-require ::File.expand_path('../domain.rb', __FILE__)
-require ::File.expand_path('../template.rb', __FILE__)
+require ::File.expand_path('../dnser/domain.rb', __FILE__)
+require ::File.expand_path('../dnser/template.rb', __FILE__)
 
-module DNS
+module DNSer
 
   def self.domain domain_name, params = {} , &block
     Domain.new domain_name, params, &block
@@ -9,7 +9,7 @@ module DNS
 
   def self.create_template name, params = {}, &block
     @templates ||= {}
-    @templates[name.to_s.downcase.to_sym] = DNS::Template.new params, &block
+    @templates[name.to_s.downcase.to_sym] = DNSer::Template.new params, &block
   end
 
   def self.apply_template name, &block
@@ -24,9 +24,9 @@ module DNS
 end
 
 def zone *args  , &block
-  DNS.domain *args , &block
+  DNSer.domain *args , &block
 end
 
 def template *args  , &block
-  DNS.create_template *args , &block
+  DNSer.create_template *args , &block
 end

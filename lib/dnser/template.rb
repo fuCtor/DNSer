@@ -1,4 +1,4 @@
-module DNS
+module DNSer
   class Template
     def initialize(params = {}, &block)
       @block = block

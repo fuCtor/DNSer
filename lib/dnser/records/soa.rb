@@ -1,5 +1,5 @@
-module DNS
-  class SoaRecord < DNS::Record
+module DNSer
+  class SoaRecord < DNSer::Record
     def initialize domain, host, params = {}, &block
 
       [:ttl, :nameserver, :email, :serial, :refresh, :retry, :expire].each do |m|
@@ -32,7 +32,7 @@ module DNS
 
     def value
       ns = @nameserver.to_s
-      if @nameserver.is_a?(DNS::Record)
+      if @nameserver.is_a?(DNSer::Record)
         ns = @nameserver.full_host.to_s
       end
       em = @email.to_s.gsub('@', '.')

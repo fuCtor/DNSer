@@ -1,4 +1,4 @@
-module DNS
+module DNSer
   class Record
     attr_writer :host
     attr_reader :domain
@@ -74,7 +74,7 @@ module DNS
     def canonical_host target_host
 
       case host
-        when DNS::Record
+        when DNSer::Record
           target_host = target_host.full_host.to_s
         when IPAddr
           target_host = target_host.to_s

@@ -1,4 +1,4 @@
-module DNS
+module DNSer
   class StreamBuilder < Builder
     attr_reader :stream
     def initialize stream
@@ -29,7 +29,7 @@ module DNS
       else
 
         value = args[2]
-        if value.is_a? DNS::Record
+        if value.is_a? DNSer::Record
           value = value.full_host
         else
           value = value.to_s
