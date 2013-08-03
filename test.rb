@@ -30,4 +30,12 @@ zone 'domain.ltd' do
 
   apply_google_app host, '6tTalLzrBXBO4Gy9700TAbpg2QTKzGYEuZ_Ls69jle8'
 
+  SRV 'corp', 'calendar.abc.com.' do
+    service '_caldavs'
+    protocol :tcp
+    port 8443
+  end
+
+  SRV 'calendar2.abc.com.', service: :caldavs, protocol: :tcp, port: 8443, weight: 0, priority: 1
+
 end

@@ -1,6 +1,12 @@
 module DNSer
-  class SoaRecord < DNSer::Record
-    def initialize domain, host, params = {}, &block
+  class SrvRecord < DNSer::BaseRecord
+    def initialize domain, *args, &block
+
+      params = {}
+      params = args.pop if args.last.is_a? Hash
+
+      host = domain.host
+      value = nil
 
       [:port, :weight, :protocol, :service].each do |m|
         instance_variable_set("@#{m}".to_sym, nil)
@@ -10,29 +16,38 @@ module DNSer
         }
       end
 
-      params = {weight: 0}.merge(params)
+      params = {weight: 0, priority: 0}.merge(params)
 
       params.each do |key, value|
         self.send key, value if  self.respond_to? key
       end
 
-      super domain, host, params
-      instance_eval &block  if block_given?
+      super domain, :SRV, *args, &block
 
-      # raise 'Email must be define' unless @email
+      raise DNSer::Record::EmptyValue.new(self), 'Service must be defined' unless @service
+      raise DNSer::Record::EmptyValue.new(self), 'Protocol must be defined' unless @protocol
     end
 
     def host
-      first_part = [@service, @protocol].map {|i| i.start_with?('_') ? i : ('_' + i)} .join('.')
-      [first_part, full_host].join '.'
-    end
+      first_part = [@service, @protocol].map(&:to_s).map {|i| i.start_with?('_') ? i : ('_' + i)} .join('.')
 
-    def type
-      :PTR
+      short_host = collapse_domain @host
+      if(short_host == '@')
+        [first_part, domain.name ]
+      else
+        [first_part, short_host, domain.name]
+      end .join('.')
+
     end
 
     def value
-      [@priority, @weight, @port, @value ].map { |i| i.is_a?(Record) ? i.full_host : i.to_s } .join(' ')
+      res = super.split(' ')
+      case res.size
+        when 1
+          ['0', @weight, @port, res.first ]
+        when 2
+          [res.first, @weight, @port, res.last ]
+      end .map(&:to_s).join(' ')
     end
   end
 end
