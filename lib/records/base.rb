@@ -39,10 +39,16 @@ module DNS
     end
 
     def value
-      if @value.to_s.include?(' ')
+      content = if @value.to_s.include?(' ')
         '"' + @value.to_s + '"'
       else
         @value
+      end
+
+      if @priority_val == 0
+        content
+      else
+        "#{@priority_val} #{content}"
       end
     end
 
