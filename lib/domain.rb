@@ -70,6 +70,18 @@ module DNS
       class_name = '::DNS::' + name.to_s.downcase.capitalize + 'Record'
       record_class = nil
 
+
+      if name.to_s.downcase.start_with? 'apply_'
+        @tpl = DNS.template name.to_s.downcase.gsub('apply_', '')
+
+        if @tpl
+          @tpl.apply self, *args, &block
+          return @tpl
+        end
+
+        raise 'Unknown DNS template'
+      end
+
       cnames = []
       if args.last.is_a? Hash
         params = args.pop
