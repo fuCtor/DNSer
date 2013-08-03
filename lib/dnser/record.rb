@@ -3,6 +3,24 @@ module DNSer
     attr_writer :host
     attr_reader :domain
 
+    class Unknown < RuntimeError
+      attr_reader :name
+      attr_reader :args
+      def initialize name, args
+        @name = name
+        @args = args
+      end
+    end
+
+    class EmptyValue < RuntimeError
+      attr_reader :record
+      attr_reader :field
+      def initialize record
+        @record = record
+      end
+    end
+
+
     def initialize domain, host, params = {}
 
       ttl domain.ttl
@@ -36,7 +54,7 @@ module DNSer
       if short_host == '@'
         domain.name
       else
-        [host, domain.name].join('.')
+        [short_host, domain.name].join('.')
       end
     end
 

@@ -12,5 +12,12 @@ module DNSer
       domain.instance_exec *args, &@block if @block
       domain.instance_exec *args, &block if block
     end
+
+    class Unknown < RuntimeError
+      attr_reader :name
+      def initialize name
+        @name = name
+      end
+    end
   end
 end

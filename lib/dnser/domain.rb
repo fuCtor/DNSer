@@ -61,7 +61,6 @@ module DNSer
 
     def method_missing name, *args, &block
       name = name.to_s.downcase
-      class_name = '::DNSer::' + name.capitalize + 'Record'
 
       return DNSer.apply_template name.gsub('apply_', '') do |tpl|
         tpl.apply self, *args, &block
@@ -70,8 +69,8 @@ module DNSer
       params = args.last.dup if args.last.is_a? Hash
 
       record_class = begin
-        eval "#{class_name}"
-      rescue => e
+        eval "::DNSer::#{name.capitalize}Record"
+      rescue NameError => e
         args = [name] + args
         DNSer::BaseRecord
       end

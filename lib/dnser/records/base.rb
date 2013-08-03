@@ -19,7 +19,7 @@ module DNSer
         when 1
           value = args[0]
         else
-          raise 'Content must be define'
+          raise DNSer::Record::EmptyValue.new(name), 'Content must be defined'
       end
 
       @name = name.to_sym

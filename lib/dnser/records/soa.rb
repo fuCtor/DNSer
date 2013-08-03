@@ -13,13 +13,13 @@ module DNSer
       params = {ttl: domain.ttl, refresh: domain.ttl, retry: domain.ttl, expire: domain.ttl, serial: Date.today.strftime("%Y%m%d")}.merge(params)
 
       params.each do |key, value|
-        self.send "#{key}", value if  self.respond_to? key
+        self.send key, value if  self.respond_to? key
       end
 
       super domain, host, params
       instance_eval &block  if block_given?
 
-      raise 'Email must be define' unless @email
+      raise DNSer::Record::EmptyValue.new(self), 'Email must be defined' unless @email
     end
 
     def host
