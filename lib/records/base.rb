@@ -4,7 +4,23 @@ module DNS
     attr :value
     attr_reader :name
 
-    def initialize domain, name, host, value, params = {}, &block
+    def initialize domain, name, *args, &block
+
+      params = {}
+      params = args.pop if args.last.is_a? Hash
+
+      host = domain.host
+      value = nil
+
+      case args.size
+        when 2
+          host = args[0]
+          value = args[1]
+        when 1
+          value = args[0]
+        else
+          raise 'Content must be define'
+      end
 
       @name = name.to_sym
       @value = value
@@ -33,6 +49,5 @@ module DNS
     def ttl v
       @ttl_val = v
     end
-
   end
 end

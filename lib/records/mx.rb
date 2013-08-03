@@ -2,9 +2,11 @@ require ::File.expand_path('../base.rb', __FILE__)
 module DNS
   class MxRecord < DNS::BaseRecord
 
-    def initialize domain, host, value, params = {}, &block
+    def initialize domain, *args, &block
       @priority_val = 0
-      super domain, :MX, host, value, params, &block
+
+
+      super domain, :MX, *args, &block
     end
 
     def value

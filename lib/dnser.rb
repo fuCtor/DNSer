@@ -12,7 +12,6 @@ module DNS
     @templates[name.to_s.downcase.to_sym] = DNS::Template.new params, &block
   end
 
-
   def self.template name
     if @templates
       @tpl = @templates[name.to_s.downcase.to_sym]

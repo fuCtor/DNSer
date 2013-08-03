@@ -86,7 +86,9 @@ module DNS
       if args.last.is_a? Hash
         params = args.pop
         args.push params
-        cnames = params.delete(:alias).to_a || []
+        cnames = params.delete(:alias) || []
+        cnames = [cnames] unless cnames.is_a? Array
+
       end
 
       begin
