@@ -33,5 +33,6 @@ module DNS
     def ttl v
       @ttl_val = v
     end
+
   end
 end

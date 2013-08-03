@@ -4,6 +4,10 @@ module DNS
     attr_reader :domain
 
     def initialize domain, host, params = {}
+
+      ttl domain.ttl_val
+      priority 0
+
       unless host.is_a? Symbol
         @host = host.dup
       else
@@ -12,6 +16,16 @@ module DNS
 
       @domain = domain
     end
+
+    def ttl(value)
+      @ttl = value
+    end
+
+    def priority(value)
+      @priority = value
+    end
+
+    alias_method :prio, :priority
 
     def host
       collapse_domain @host.to_s
@@ -56,6 +70,25 @@ module DNS
         name
       end
     end
+
+    def canonical_host target_host
+
+      case host
+        when DNS::Record
+          target_host = target_host.full_host.to_s
+        when IPAddr
+          target_host = target_host.to_s
+        else
+
+          ip = IPAddr.new target_host rescue nil
+          return target_host.to_s if ip
+
+          target_host = target_host.to_s
+          target_host = target_host + '.' unless target_host.end_with? '.'
+      end
+
+    end
+
   end
 end
 
