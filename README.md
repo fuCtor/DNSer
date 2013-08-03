@@ -34,6 +34,14 @@ zone 'domain.ltd' do
   A :dev, IPAddr.new('127.0.0.2')
 
   apply_google_app host, '6tTalLzrBXBO4Gy9700TAbpg2QTKzGYEuZ_Ls69jle8'
+
+  SRV 'corp', 'calendar.abc.com.' do
+    service '_caldavs'
+    protocol :tcp
+    port 8443
+  end
+
+  SRV 'calendar2.abc.com.', service: :caldavs, protocol: :tcp, port: 8443, weight: 0, priority: 1
 end
 ```
 
@@ -41,17 +49,19 @@ Result:
 
     $ORIGIN domain.ltd.
     $TTL 3600
-    domain.ltd.  IN SOA  	ns1.domain.ltd. admin.domain.ltd. (20130803 3600 3600 3600 3600)
-    ns1          IN NS   	ns1.dnsimple.com.
-    @            IN A    	127.0.0.1
-    @            IN TXT  	"v=spf1 include:_spf.google.com ~all"                               	#GMail SPF
-    @            IN MX   	10 ASPMX23.GOOGLEMAIL.COM.                                          	#GMail
-    @            IN TXT  	google-site-verification=6tTalLzrBXBO4Gy9700TAbpg2QTKzGYEuZ_Ls69jle8	#Google verification code
-    @            IN MX   	1 ASPMX.L.GOOGLE.COM.                                               	#GMail
-    @            IN MX   	5 ALT1.ASPMX.L.GOOGLE.COM.                                          	#GMail
-    @            IN MX   	10 ASPMX2.GOOGLEMAIL.COM.                                           	#GMail
-    @            IN MX   	5 ALT2.ASPMX.L.GOOGLE.COM.                                          	#GMail
-    dev          IN A    	127.0.0.2
-    doc          IN CNAME	ghs.googlehosted.com.
-    mail         IN CNAME	ghs.googlehosted.com.
-    www          IN CNAME	domain.ltd.
+    domain.ltd.                     IN SOA  	ns1.domain.ltd. admin.domain.ltd. (20130803 3600 3600 3600 3600)
+    ns1                             IN NS   	ns1.dnsimple.com.
+    @                               IN A    	127.0.0.1
+    @                               IN TXT  	"v=spf1 include:_spf.google.com ~all"                               	#GMail SPF
+    @                               IN MX   	10 ASPMX23.GOOGLEMAIL.COM.                                          	#GMail
+    @                               IN TXT  	google-site-verification=6tTalLzrBXBO4Gy9700TAbpg2QTKzGYEuZ_Ls69jle8	#Google verification code
+    @                               IN MX   	1 ASPMX.L.GOOGLE.COM.                                               	#GMail
+    @                               IN MX   	5 ALT1.ASPMX.L.GOOGLE.COM.                                          	#GMail
+    @                               IN MX   	5 ALT2.ASPMX.L.GOOGLE.COM.                                          	#GMail
+    @                               IN MX   	10 ASPMX2.GOOGLEMAIL.COM.                                           	#GMail
+    _caldavs._tcp.corp.domain.ltd.  IN SRV  	0 0 8443 calendar.abc.com.
+    _caldavs._tcp.domain.ltd.       IN SRV  	1 0 8443 calendar2.abc.com.
+    dev                             IN A    	127.0.0.2
+    doc                             IN CNAME	ghs.googlehosted.com.
+    mail                            IN CNAME	ghs.googlehosted.com.
+    www                             IN CNAME	domain.ltd.
