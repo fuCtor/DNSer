@@ -24,7 +24,7 @@ module DNS
 
       @name = name.to_sym
       @value = value
-      params = {ttl: domain.ttl_val}.merge(params)
+      params = {ttl: domain.ttl}.merge(params)
 
       params.each do |key, value|
         self.send "#{key}", value if self.respond_to? key

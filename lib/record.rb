@@ -5,7 +5,7 @@ module DNS
 
     def initialize domain, host, params = {}
 
-      ttl domain.ttl_val
+      ttl domain.ttl
       priority 0 unless @priority_val
 
       unless host.is_a? Symbol

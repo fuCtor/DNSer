@@ -7,25 +7,17 @@ require ::File.expand_path('../builder.rb', __FILE__)
 module DNS
   class Domain
     attr :name
-    attr :ttl_val
 
     def initialize domain_name, params = {}, &block
       @name = domain_name
-      @builder = params[:builder] || DNS::StreamBuilder.new($stdout)
 
-      unless @builder.is_a? DNS::Builder
-        @builder =  DNS::StreamBuilder.new(@builder)
-      end
+      @builder = params[:builder] || DNS::StreamBuilder.new($stdout)
+      @builder = DNS::StreamBuilder.new(@builder) unless @builder.is_a? DNS::Builder
 
       @name = @name + '.' unless @name.end_with?('.')
       @ttl_val = 3600
       @records = []
       instance_exec self, &block
-
-      @builder.origin @name
-      @builder.ttl @ttl_val
-
-
 
       dump
     end
@@ -37,72 +29,61 @@ module DNS
     alias_method :current, :name
     alias_method :host, :name
 
-    def ttl(t)
+    def ttl(*args)
+      @ttl_val = args.first unless args.empty?
       @ttl_val
     end
 
     def dump
+      @builder.origin @name
+      @builder.ttl @ttl_val
+
       @records_tmp = @records.dup
 
       soa_index = @records_tmp.index {|x| x.is_a?(DNS::SoaRecord) }
       @builder.write @records_tmp.delete_at( soa_index ) if soa_index
 
       ns = []
-      @records_tmp.each do |r|
+      @records_tmp = @records_tmp.map do |r|
         if r.type.to_s.downcase == 'ns'
           @builder.write r
-          ns << r
+          nil
+        else
+          r
         end
-      end
+      end .compact
 
-      @records_tmp = @records_tmp - ns
-
-      @records_tmp.sort! {|x, y|
-        x.host <=> y.host
-      }
-
+      @records_tmp.sort! {|x, y| x.host <=> y.host }
       @records_tmp.each {|r| @builder.write r }
 
       @builder.sync
     end
 
     def method_missing name, *args, &block
-      class_name = '::DNS::' + name.to_s.downcase.capitalize + 'Record'
-      record_class = nil
+      name = name.to_s.downcase
+      class_name = '::DNS::' + name.capitalize + 'Record'
 
+      return DNS.apply_template name.gsub('apply_', '') do |tpl|
+        tpl.apply self, *args, &block
+      end if name.start_with? 'apply_'
 
-      if name.to_s.downcase.start_with? 'apply_'
-        @tpl = DNS.template name.to_s.downcase.gsub('apply_', '')
+      params = args.last.dup if args.last.is_a? Hash
 
-        if @tpl
-          @tpl.apply self, *args, &block
-          return @tpl
-        end
-
-        raise 'Unknown DNS template'
-      end
-
-      cnames = []
-      if args.last.is_a? Hash
-        params = args.pop
-        args.push params
-        cnames = params.delete(:alias) || []
-        cnames = [cnames] unless cnames.is_a? Array
-
-      end
-
-      begin
-        eval "record_class = #{class_name}"
-        @records << record_class.new(self, *args, &block)
+      record_class = begin
+        eval "#{class_name}"
       rescue => e
-        @records << DNS::BaseRecord.new(self, name, *args, &block)
+        args = [name] + args
+        DNS::BaseRecord
       end
 
-      record = @records.last
+      record =  record_class.new(self, *args, &block)
+      @records << record
 
-      cnames.each do |host|
-        @records << DNS::BaseRecord.new(self, :CNAME, host, record, &block)
-      end
+      if params.key? :alias
+        [params[:alias]].flatten.each do |host|
+          @records << DNS::BaseRecord.new(self, :CNAME, host, record, &block)
+        end
+      end if params
 
       record
     end

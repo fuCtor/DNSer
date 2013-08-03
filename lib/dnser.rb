@@ -12,10 +12,12 @@ module DNS
     @templates[name.to_s.downcase.to_sym] = DNS::Template.new params, &block
   end
 
-  def self.template name
+  def self.apply_template name, &block
     if @templates
-      @tpl = @templates[name.to_s.downcase.to_sym]
-      @tpl.dup if @tpl
+      tpl = @templates[name.to_s.downcase.to_sym].dup rescue nil
+      yield tpl if tpl
+      raise 'Unknown DNS template' unless tpl
+      tpl
     end
   end
 
