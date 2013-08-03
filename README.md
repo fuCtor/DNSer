@@ -3,41 +3,51 @@ DNSer
 
 Ruby DSL for create DNS Zone file
 
-    ipaddr1 = IPAddr.new "3ffe:505:2::1"
-    ipaddr2 = IPAddr.new "8.8.8.8"
+    template :google_app  do |host, code, params|
     
-    DNS.domain 'test.ru' do
+      TXT host, ('google-site-verification=' + code), :comment => "Google verify"
+    
+      MX host, 'ASPMX.L.GOOGLE.COM.', :priority => 1, :comment => "GMail"
+      MX host, 'ALT1.ASPMX.L.GOOGLE.COM.', :priority => 5, :comment => "GMail"
+      MX host, 'ALT2.ASPMX.L.GOOGLE.COM.', :priority => 5, :comment => "GMail"
+      MX host, 'ASPMX2.GOOGLEMAIL.COM.', :priority => 10, :comment => "GMail"
+      MX host, 'ASPMX23.GOOGLEMAIL.COM.', :priority => 10, :comment => "GMail"
+      TXT host, 'v=spf1 include:_spf.google.com ~all', :comment => "GMail SPF"
+    
+      %w(mail doc).each do |sub|
+    	CNAME [sub, host].join('.'), 'ghs.googlehosted.com.'
+      end
+    end
+    
+    zone 'domain.ltd' do
       ttl 3600
-      ns = NS 'ns1', ipaddr2
-      NS 'ns2', ipaddr2
+      ns = NS 'ns1', 'ns1.dnsimple.com.'
     
       SOA host do
-        nameserver ns
-        email 'admin@test.ru'
+    	nameserver ns
+    	email 'admin@domain.ltd'
       end
     
-      A host, ipaddr2
-      AAAA host, ipaddr1
+      A host, IPAddr.new('127.0.0.1'), :alias => ['www']
     
-      GOOGLE '6tTalLzrBXBO4Gy9700TAbpg2QTKzGYEuZ_Ls69jle8', :host => 'sub', :comment => "Google App"
+      apply_google_app host, '6tTalLzrBXBO4Gy9700TAbpg2QTKzGYEuZ_Ls69jle8'
     end
    
 Result:
 
-    $ORIGIN test.ru.
+    $ORIGIN domain.ltd.
     $TTL 3600
-    test.ru.  IN SOA    ns1.test.ru. admin.test.ru. (20130728 3600 3600 3600 3600)  
-    ns1   IN NS   	8.8.8.8 
-    ns2   IN NS   	8.8.8.8 
-    @ IN A	8.8.8.8 
-    @ IN AAAA 	3ffe:505:2::1   
-    mail.sub  IN CNAME	ghs.googlehosted.com.   	#Google App
-    sub   IN MX   	10 ASPMX2.GOOGLEMAIL.COM.	#Google App
-    sub   IN MX   	5 ALT2.ASPMX.L.GOOGLE.COM.  	#Google App
-    sub   IN MX   	5 ALT1.ASPMX.L.GOOGLE.COM.  	#Google App
-    sub   IN MX   	10 ASPMX23.GOOGLEMAIL.COM.   	 #Google App
-    sub   IN TXT  	"v=spf1 include:_spf.google.com ~all"   	#Google App
-    sub   IN TXT  	google-site-verification=6tTalLzrBXBO4Gy9700TAbpg2QTKzGYEuZ_Ls69jle8 	#Google App
-    sub   IN MX   	1 ASPMX.L.GOOGLE.COM.   	#Google App
-    www.sub   IN CNAME	ghs.googlehosted.com.   	#Google App
-  
+    domain.ltd.  IN SOA  	ns1.domain.ltd. admin.domain.ltd. (20130803 3600 3600 3600 3600)
+    ns1  IN NS   	ns1.dnsimple.com.   
+    @ IN A	127.0.0.1   
+    @ IN TXT     "v=spf1 include:_spf.google.com ~all"                                  #GMail SPF
+    @ IN TXT     google-site-verification=6tTalLzrBXBO4Gy9700TAbpg2QTKzGYEuZ_Ls69jle8	   #Google verify
+    @ IN MX      1 ASPMX.L.GOOGLE.COM.   	    #GMail
+    @ IN MX      5 ALT1.ASPMX.L.GOOGLE.COM.  	#GMail
+    @ IN MX   	10 ASPMX23.GOOGLEMAIL.COM.  	#GMail
+    @ IN MX   	10 ASPMX2.GOOGLEMAIL.COM.   	#GMail
+    @ IN MX   	5 ALT2.ASPMX.L.GOOGLE.COM.  	#GMail
+    doc  IN CNAME	ghs.googlehosted.com.   
+    mail IN CNAME	ghs.googlehosted.com.   
+    www  IN CNAME	domain.ltd. 
+    
