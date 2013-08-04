@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'dnser'
+require 'dnser/version'
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: dnser [options] zone"
+  opts.on('-o', '--output [file]', 'Path to output file') do |file|
+    DNSer.config.output = File.open(file, 'w')
+  end
+  opts.on('-f', '--full', 'Use full domain name in records') do
+    DNSer.config.full_domain = true
+  end
+  opts.on_tail('-v', '--version') { puts "DNSer v#{DNSer::VERSION}"; exit(0) }
+
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+end.parse!
+
+zone_file = ARGV.last
+
+unless zone_file
+  puts "Zone file not defined."
+  exit(0)
+end
+
+unless File.exist?(zone_file)
+  puts "Zone file #{zone_file} doesn't exist."
+  exit(0)
+end
+
+load zone_file
