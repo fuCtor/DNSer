@@ -5,6 +5,8 @@ DNSer
 
 Ruby DSL for create DNS Zone file
 
+demo.zone:
+
 ```ruby
 template :google_app  do |host, code, params|
 
@@ -46,9 +48,11 @@ zone 'domain.ltd' do
   SRV 'calendar2.abc.com.', service: :caldavs, protocol: :tcp, port: 8443, weight: 0, priority: 1
 end
 ```
-
+  
 Result:
-
+    
+    user@hostname: dnser demo.zone
+    
     $ORIGIN domain.ltd.
     $TTL 3600
     domain.ltd.                     IN SOA  	ns1.domain.ltd. admin.domain.ltd. (20130803 3600 3600 3600 3600)
