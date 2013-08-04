@@ -1,6 +1,8 @@
 DNSer
 =====
 
+[![Gem Version](https://badge.fury.io/rb/dnser.png)](http://badge.fury.io/rb/dnser)
+
 Ruby DSL for create DNS Zone file
 
 ```ruby
