@@ -16,5 +16,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/fuCtor/DNSer'
   s.license     = 'MIT'
 
+  s.add_development_dependency "rspec"
+
   s.require_paths = ["lib"]
 end
