@@ -47,6 +47,11 @@ describe DNSer::Record do
       expect( DNSer::BaseRecord.new(zone, :A, zone.host, '1.1.1.1', priority: 10).priority ).to eq(10)
     end
 
+    it "should wrap value if TXT record" do
+      zone, io = test_zone
+      expect( DNSer::BaseRecord.new(zone, :TXT, zone.host, 'value', priority: 10).value ).to eq('10 "value"')
+    end
+
     it "should support IPAddr as value" do
       zone, io = test_zone
       ip = IPAddr.new('1.1.1.1')

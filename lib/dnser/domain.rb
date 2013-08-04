@@ -11,7 +11,7 @@ module DNSer
     def initialize domain_name, params = {}, &block
       @name = domain_name
 
-      @builder = params[:builder] || DNSer::StreamBuilder.new($stdout)
+      @builder = params[:builder] || DNSer.config.output #DNSer::StreamBuilder.new($stdout)
       @builder = DNSer::StreamBuilder.new(@builder) unless @builder.is_a? DNSer::Builder
 
       @name = @name + '.' unless @name.end_with?('.')

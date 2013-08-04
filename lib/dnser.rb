@@ -1,5 +1,6 @@
 require ::File.expand_path('../dnser/domain.rb', __FILE__)
 require ::File.expand_path('../dnser/template.rb', __FILE__)
+require 'singleton'
 
 module DNSer
 
@@ -19,6 +20,25 @@ module DNSer
       raise Template::Unknown.new(name.to_s.downcase.to_sym), 'Unknown DNS template' unless tpl
       tpl
     end
+  end
+
+  def self.config
+    Config.instance
+  end
+
+
+  class Config
+    include ::Singleton
+
+    attr_accessor :output, :full_domain
+
+    def output
+      @output ||= DNSer::StreamBuilder.new($stdout)
+    end
+    def full_domain
+      @full_domain ||= false
+    end
+
   end
 
 end

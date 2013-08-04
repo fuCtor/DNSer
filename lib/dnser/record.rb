@@ -47,7 +47,7 @@ module DNSer
     alias_method :prio, :priority
 
     def host
-      collapse_domain @host.to_s
+      DNSer.config.full_domain ? expand_domain(@host.to_s) : collapse_domain(@host.to_s)
     end
 
     def full_host
@@ -74,12 +74,21 @@ module DNSer
 
 
     protected
-    def collapse_domain name
+    def expand_domain( name )
+      return domain.host if name == '@'
+      return [name, domain.host].join('.') unless name.end_with?('.')
+      name
+    end
+
+    def collapse_domain( name )
+
       name = name.dup
+
       return name if name == '@'
-      return name unless name.index('.')
+      return name unless name.end_with?('.')
 
       name = name + '.' unless name.end_with?('.')
+
       name.gsub!( domain.name.dup, '')
       name.chop! if name.end_with?('.')
 
@@ -88,9 +97,10 @@ module DNSer
       else
         name
       end
+
     end
 
-    def canonical_host target_host
+    def canonical_host( target_host )
 
       case host
         when DNSer::Record

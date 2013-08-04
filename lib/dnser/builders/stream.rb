@@ -1,3 +1,4 @@
+require 'stringio'
 module DNSer
   class StreamBuilder < Builder
     attr_reader :stream
@@ -5,10 +6,10 @@ module DNSer
       case stream
         when String
           @stream = File.new stream, 'w'
-        when IO,File,StringIO
+        when ::IO,::File,::StringIO
           @stream = stream
         else
-          raise 'Unknown stream type'
+          raise "Unknown stream type #{stream.class}"
       end
 
       @buffer = []
