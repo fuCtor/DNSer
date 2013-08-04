@@ -1,3 +1,5 @@
+require ::File.expand_path('../base.rb', __FILE__)
+
 module DNSer
   class SrvRecord < DNSer::BaseRecord
     def initialize domain, *args, &block
