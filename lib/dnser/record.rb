@@ -39,8 +39,9 @@ module DNSer
       @ttl = value
     end
 
-    def priority(value)
-      @priority_val = value
+    def priority(*args)
+      @priority_val = args.first if args.size == 1
+      @priority_val
     end
 
     alias_method :prio, :priority

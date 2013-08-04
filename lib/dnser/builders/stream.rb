@@ -5,7 +5,7 @@ module DNSer
       case stream
         when String
           @stream = File.new stream, 'w'
-        when IO,File
+        when IO,File,StringIO
           @stream = stream
         else
           raise 'Unknown stream type'

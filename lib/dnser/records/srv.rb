@@ -16,7 +16,7 @@ module DNSer
         }
       end
 
-      params = {weight: 0, priority: 0}.merge(params)
+      params = {weight: 0, priority: 0, port: 0}.merge(params)
 
       params.each do |key, value|
         self.send key, value if  self.respond_to? key
@@ -26,6 +26,7 @@ module DNSer
 
       raise DNSer::Record::EmptyValue.new(self), 'Service must be defined' unless @service
       raise DNSer::Record::EmptyValue.new(self), 'Protocol must be defined' unless @protocol
+      raise DNSer::Record::EmptyValue.new(self), 'Port must be defined' if @port == 0
     end
 
     def host

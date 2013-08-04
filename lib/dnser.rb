@@ -15,7 +15,7 @@ module DNSer
   def self.apply_template name, &block
     if @templates
       tpl = @templates[name.to_s.downcase.to_sym].dup rescue nil
-      yield tpl if tpl
+      yield tpl if tpl if block_given?
       raise Template::Unknown.new(name.to_s.downcase.to_sym), 'Unknown DNS template' unless tpl
       tpl
     end

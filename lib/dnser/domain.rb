@@ -17,7 +17,7 @@ module DNSer
       @name = @name + '.' unless @name.end_with?('.')
       @ttl_val = 3600
       @records = []
-      instance_exec self, &block
+      instance_exec self, &block if block
 
       dump
     end
@@ -53,7 +53,7 @@ module DNSer
         end
       end .compact
 
-      @records_tmp.sort! {|x, y| x.host <=> y.host }
+#      @records_tmp.sort! {|x, y| x.host <=> y.host }
       @records_tmp.each {|r| @builder.write r }
 
       @builder.sync

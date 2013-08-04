@@ -22,7 +22,7 @@ module DNSer
           raise DNSer::Record::EmptyValue.new(name), 'Content must be defined'
       end
 
-      @name = name.to_sym
+      @name = name.to_s.upcase.to_sym
       @value = value
       params = {ttl: domain.ttl}.merge(params)
 
@@ -39,7 +39,7 @@ module DNSer
     end
 
     def value
-      content = if @value.to_s.include?(' ')
+      content = if type == :TXT
         '"' + @value.to_s + '"'
       else
         @value
